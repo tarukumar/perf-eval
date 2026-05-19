@@ -13,6 +13,7 @@ vllm:
     --enable-expert-parallel
     --max-model-len 32768
     --max-num-seqs 512
+    --max-num-batched-tokens 512
     --kv-cache-dtype fp8
     --block-size 256
     --tokenizer-mode deepseek_v4
