@@ -100,3 +100,11 @@ while IFS=$'\t' read -r category num_threads temperature maximum_step_limit max_
       --no-samples || true
   fi
 done <<< "$WORKLOAD_BFCL_TSV"
+
+# --- Regression comparison via dashboard API (best-effort) ---
+echo "--- :mag: Eval regression check"
+python3 "$DIR/compare_via_api.py" \
+  --candidate "$WORKLOAD_IMAGE" \
+  --eval-sigma 2 \
+  --perf-threshold 0.02 \
+  || true
