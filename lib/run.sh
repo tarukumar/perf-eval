@@ -101,10 +101,19 @@ while IFS=$'\t' read -r category num_threads temperature maximum_step_limit max_
   fi
 done <<< "$WORKLOAD_BFCL_TSV"
 
-# --- Regression comparison via dashboard API (best-effort) ---
+# --- Regression comparison via dashboard API ---
+# Fails the step if a regression is detected (exit 1).
+# API errors (exit 2) are treated as soft failures.
 echo "--- :mag: Eval regression check"
+rc=0
 python3 "$DIR/compare_via_api.py" \
   --candidate "$WORKLOAD_IMAGE" \
   --eval-sigma 2 \
   --perf-threshold 0.02 \
-  || true
+  || rc=$?
+if [[ "$rc" -eq 2 ]]; then
+  echo "^^^ +++"
+  echo "Warning: regression check could not reach the dashboard API"
+elif [[ "$rc" -ne 0 ]]; then
+  exit "$rc"
+fi
